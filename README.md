@@ -20,7 +20,7 @@ Note that the latter has little interest when one seeks the actual paths (but th
    ```
    - the graph used in the [paper](#c1)
       - $\epsilon$ is a free parameter that controls the connectedness of the graph, i.e. the number of adjacent vertices to which one vertex is connected "above" and "below" (assuming the set of vertices is a sequence of increasing integers $[0,1,...,n]$, such that "above" and "below" refer to greater or smaller vertex values).
-      - In other words, $\epsilon$ refers to the maximum discrete distance between the current vertex and the "next, reachable" one. Note that the degrees of vertices at both ends must be less than $\epsilon$.
+      - In other words, $\epsilon$ refers to the maximum discrete distance between the current vertex and the "next, reachable" one. Note that the degrees of vertices at both ends must therefore be less than $\epsilon$.
    ```python
    n = 6  # total number of vertices
    eps = 5  # number of jumps allowed
@@ -46,7 +46,9 @@ Taking $n=6$ vertices, $\epsilon=2$, we get the following adjacency matrix, $A$:
  [0 0 1 1 0 1]
  [0 0 0 1 1 0]]
 ```
-the list of all the $(3,2)$-paths is $(3 \rightarrow 1 \rightarrow 0 \rightarrow 2), (3 \rightarrow 1 \rightarrow 2), (3 \rightarrow 2), (3 \rightarrow 4 \rightarrow 2), (3 \rightarrow 5 \rightarrow 4 \rightarrow 2)$. The case $\epsilon=1$ is trivial and only returns the path $(3 \rightarrow 2)$.
+the list of all the $(3,2)$-paths is $(3 \rightarrow 1 \rightarrow 0 \rightarrow 2), (3 \rightarrow 1 \rightarrow 2), (3 \rightarrow 2), (3 \rightarrow 4 \rightarrow 2), (3 \rightarrow 5 \rightarrow 4 \rightarrow 2)$. 
+> [!Note]
+> The case $\epsilon=1$ is trivial and only returns the path $(3 \rightarrow 2)$.
 
 #### Observations
 - on vertices
