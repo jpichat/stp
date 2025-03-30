@@ -57,7 +57,7 @@ the list of all the $(3,2)$-paths is $(3 \rightarrow 1 \rightarrow 0 \rightarrow
       - by convolution:
          - $S=f*g$, where $f=[1,1,...,1]\in \mathbb{R}^n$ and $g=[1,..,1,0,1,..,1] \in \mathbb{R}^{2 \epsilon +1}$ (with $\epsilon$ 1s on each side of a central zero, which is used so that no vertex is self-connected).
             - one can verify that if $\epsilon \ge n-1$, then $S=[n-1,n-1,...,n-1]\in \mathbb{R}^n$ i.e., the graph is complete.
-   - we can observe that the vertices of the graph have degrees, $d$:
+   - the vertices have degrees, $d$:
       - at least $\epsilon$ and at most $2\epsilon$, if $1 \le \epsilon \le \lfloor \frac{n}{2} \rfloor$ 
       - at least $\epsilon$ and at most $n-1$, if $\lfloor \frac{n}{2} \rfloor \lt \epsilon \lt n-1$
       - $\min_{d\in D}d=\max_{d \in D}d=n-1$, where $D$ is the degree set of $G$, otherwise.   
