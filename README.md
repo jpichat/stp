@@ -94,11 +94,12 @@ Given the following adjacency matrix:
  [1 0 1 1 1 0 1 0 1 1 0 1]
  [1 1 1 1 1 1 0 1 0 1 1 0]]
 ```
-the exact number of $(7,3)$-paths considering the node set $(0, 1, 2, 3, 4, 5, 6, 7 ,8, 9, 10, 11)$ and the adjacency matrix above, is 301402, while its naive estimation gives 298952.9808 (i.e., ~1% error)
+the exact number of $(7,3)$-paths considering the node set $(0, 1, 2, 3, 4, 5, 6, 7 ,8, 9, 10, 11)$ and the adjacency matrix above, is 301402, while its naive estimation gives 298952.9808 
 
-We can first observe that the estimated number of paths calculated using eq.(1), is rather close to the actual number using 5000 randomly generated valid paths (from `naive_path_generation`). Second, the distribution of generated paths lengths is shown below; we can clearly observe the bias toward shorter paths (as pointed out by the authors), since longer paths are more likely to reach "dead ends" along the way.
-
-One should also note that different valid $(s,t)$-paths may have the same length, which makes such a histogram tricky to interpret; as opposed to the direct path of length 2 (here $(7,3)$), which is the only one of length 2.
+#### Observations
+   - the estimated number of paths calculated is rather close to the actual number using 5000 randomly generated valid paths (~1% error).
+   - the distribution of generated paths lengths (see the histogram below) shows a clear bias toward shorter paths (as pointed out by the authors), since longer paths are more likely to reach "dead ends" along the way.
+      - different valid $(s,t)$-paths may have the same length, which makes the histogram a little bit tricky to interpret (as opposed to the direct path of length 2, here $(7,3)$, which is the only one of length 2).
 
 ![histo_naive](figures/histo_naive2.png)
 
