@@ -18,7 +18,7 @@ Note that the latter has little interest when one seeks the actual paths (but th
    ```python
    from utils import make_random_adjacency_matrix
    
-   A, start_node, end_node = make_random_adjacency_matrix(12, density=0.7, return_st=True)
+   A, start, end = make_random_adjacency_matrix(12, density=0.7, return_st=True)
    ```
    - the graph used in the [paper](#c1)
       - $\epsilon$ is a free parameter that controls the connectedness of the graph, i.e. the number of adjacent vertices to which one vertex is connected "above" and "below" (assuming the set of vertices is a sequence of increasing integers $[0,1,...,n]$, such that "above" and "below" refer to greater or smaller vertex values).
@@ -37,8 +37,7 @@ Note that the latter has little interest when one seeks the actual paths (but th
 ```python
 from st_paths import PathsFinder
 
-finder = PathsFinder(A, start_node, end_node)
-paths = finder.get_paths()
+paths = PathsFinder(A, start, end).get_paths()
 ```
 
 #### Example
@@ -87,31 +86,30 @@ Algorithm 1 in [[1]](#r1) estimates that number, and can be accessed via:
 ```python
 import utils
 
-n = 11  # total number of vertices [0, 1, 2, ..., n-1]
-eps = 4  # max discrete distance allowed between a path vertex and its neighbour
-start_node = 6
-end_node = 5
+n = 12  # total number of vertices [0, 1, 2, ..., n-1]
+eps = 3  # max discrete distance allowed between a path vertex and its neighbour
+start = 6
+end = 5
 
 # make adjacency matrix
 A = utils.make_special_adjacency_matrix(n, eps)
 
-pg = PathGenerator(A)
-
-naive_estimation = pg.estimate_count_naive(start_node, end_node, n_bootstrap=2000)
+# estimate count of paths
+naive_estimation = PathGenerator(A).estimate_count_naive(start, end, n_bootstrap=500)
 ```
 
 which gives:
 ```
-[func:'__main__.PathsFinder.get_paths'] ran in 0.0061s
-Found 4210 paths.
-[func:'utils.PathsGenerator.estimate_count_naive'] ran in 12.9013s
-Estimated 4208.3345560000025 paths (0.04% error)
+[func:'__main__.PathsFinder.get_paths'] ran in 0.0016s
+Found 764 (6,5)-paths.
+[func:'utils.PathGenerator.estimate_count_naive'] ran in 14.0664s
+Estimated 763.5292224000002 paths (0.062% error)
 ```
 
 #### Observations
-   - the estimated number of paths calculated is rather close to the actual number using 5000 randomly generated valid paths (~1% error).
-   - the distribution of generated paths lengths (see the histogram below) shows a clear bias toward shorter paths (as pointed out by the authors), since longer paths are more likely to reach "dead ends" along the way.
-      - different valid $(s,t)$-paths may have the same length, which makes the histogram a little bit tricky to interpret (as opposed to the direct path of length 2, here $(7,3)$, which is the only one of length 2).
+   - the estimated number of paths calculated is rather close to the actual number.
+   - the distribution of generated paths lengths (see the histogram below, obtained for a different set of parameters) shows a clear bias toward shorter paths (as pointed out by the authors), since longer paths are more likely to reach "dead ends" along the way.
+      - different valid $(s,t)$-paths may have the same length, which makes the histogram a bit tricky to interpret (as opposed to the direct path of length 2, here $(7,3)$, which is the only one of length 2).
 
 ![histo_naive](figures/histo_naive2.png)
 

@@ -76,8 +76,8 @@ if __name__ == "__main__":
 
     # 1. list all paths
 
-    n = 11  # total number of vertices [0, 1, 2, ..., n-1]
-    eps = 4  # max discrete distance allowed between a path vertex and its neighbour
+    n = 12  # total number of vertices [0, 1, 2, ..., n-1]
+    eps = 3  # max discrete distance allowed between a path vertex and its neighbour
     start_vertex = 6
     end_vertex = 5
 
@@ -88,11 +88,11 @@ if __name__ == "__main__":
     finder = PathsFinder(A, start_vertex, end_vertex)
     paths = finder.get_paths()
 
-    print(f"Found {len(paths)} paths.")
+    print(f"Found {len(paths)} ({start_vertex},{end_vertex})-paths.")
 
     # 2. naive estimation of the number of s-t paths
     pg = PathGenerator(A)
-    naive_estimation = pg.estimate_count_naive(start_vertex, end_vertex, n_bootstrap=2000)
+    naive_estimation = pg.estimate_count_naive(start_vertex, end_vertex, n_bootstrap=500)
 
     print(
         f"Estimated {naive_estimation} paths"

@@ -94,11 +94,11 @@ class PathGenerator:
             if current_node == end_node:
                 return path, g
 
-            neighbors = self.adjacency[current_node]
+            neighbours = self.adjacency[current_node]
             unvisited = []
-            for neighbor in neighbors:
-                if not (visited & (1 << neighbor)):
-                    unvisited.append(neighbor)
+            for neighbour in neighbours:
+                if not (visited & (1 << neighbour)):
+                    unvisited.append(neighbour)
 
             if not unvisited:
                 return None, 0.0  # dead-end
@@ -110,7 +110,7 @@ class PathGenerator:
             current_node = next_node
 
     @timeit
-    def estimate_count_naive(self, start_node, end_node, n: int = 1000, n_bootstrap: int = 10000):
+    def estimate_count_naive(self, start_node, end_node, n: int = 5000, n_bootstrap: int = 1000):
         """Estimates count of valid s-t paths naively.
 
         Args:
