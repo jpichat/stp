@@ -16,22 +16,29 @@ Note that the latter has little interest when one seeks the actual paths (but th
 1. Start with creating an adjacency matrix for either:
    - a random graph
    ```python
-   A, start_node, end_node = rand_adjacency_matrix(12, density=0.7, return_st=True)
+   from utils import make_random_adjacency_matrix
+   
+   A, start_node, end_node = make_random_adjacency_matrix(12, density=0.7, return_st=True)
    ```
    - the graph used in the [paper](#c1)
       - $\epsilon$ is a free parameter that controls the connectedness of the graph, i.e. the number of adjacent vertices to which one vertex is connected "above" and "below" (assuming the set of vertices is a sequence of increasing integers $[0,1,...,n]$, such that "above" and "below" refer to greater or smaller vertex values).
       - In other words, $\epsilon$ refers to the maximum discrete distance between the current vertex and the "next, reachable" one. Note that the degrees of vertices at both ends must therefore be less than $\epsilon$.
    ```python
+   from utils import make_special_adjacency_matrix
+   
    n = 6  # total number of vertices
    eps = 5  # number of jumps allowed
    
-   A = spe_adjacency_matrix(n, eps)
+   A = make_special_adjacency_matrix(n, eps)
    ```
 2. then get the list of paths (assuming vertices are represented by their indices), after picking:
    - a `start` vertex, as an integer between 0 and the number of vertices -1
    - an `end` vertex, as an integer between 0 and the number of vertices -1.
 ```python
-paths_list = get_paths(A, start_node, end_node, verbose=True)
+from st_paths import PathsFinder
+
+finder = PathsFinder(A, start_node, end_node)
+paths = finder.get_paths()
 ```
 
 #### Example
@@ -76,25 +83,30 @@ the list of all the $(3,2)$-paths is $(3 \rightarrow 1 \rightarrow 0 \rightarrow
 
 The problem of estimating the number of $(s,t)$-paths in random graphs is complicated (it is \#P-complete), as listing them all in order to get their exact count is computationally intensive for large graphs. This is where sequential Monte Carlo methods are useful. Very interesting works have been proposed in [[1]](#r1) and [[2]](#r2).
 
-`naive_path_generation` implements algorithm 1 in [[1]](#r1) and estimates that number.
-
-#### Example
-Given the following adjacency matrix:
+Algorithm 1 in [[1]](#r1) estimates that number, and can be accessed via:
 ```python
-[[0 0 1 0 1 1 1 1 1 1 1 1]
- [0 0 1 1 1 1 1 1 1 0 0 1]
- [1 1 0 1 0 0 0 0 1 0 1 1]
- [0 1 1 0 0 1 1 1 1 1 1 1]
- [1 1 0 0 0 0 1 0 1 1 1 1]
- [1 1 0 1 0 0 1 1 0 1 0 1]
- [1 1 0 1 1 1 0 1 1 1 1 0]
- [1 1 0 1 0 1 1 0 0 0 0 1]
- [1 1 1 1 1 0 1 0 0 1 1 0]
- [1 0 0 1 1 1 1 0 1 0 1 1]
- [1 0 1 1 1 0 1 0 1 1 0 1]
- [1 1 1 1 1 1 0 1 0 1 1 0]]
+import utils
+
+n = 11  # total number of vertices [0, 1, 2, ..., n-1]
+eps = 4  # max discrete distance allowed between a path vertex and its neighbour
+start_node = 6
+end_node = 5
+
+# make adjacency matrix
+A = utils.make_special_adjacency_matrix(n, eps)
+
+pg = PathGenerator(A)
+
+naive_estimation = pg.estimate_count_naive(start_node, end_node, n_bootstrap=2000)
 ```
-the exact number of $(7,3)$-paths considering the node set $(0, 1, 2, 3, 4, 5, 6, 7 ,8, 9, 10, 11)$ and the adjacency matrix above, is 301402, while its naive estimation gives 298952.9808 
+
+which gives:
+```
+[func:'__main__.PathsFinder.get_paths'] ran in 0.0061s
+Found 4210 paths.
+[func:'utils.PathsGenerator.estimate_count_naive'] ran in 12.9013s
+Estimated 4208.3345560000025 paths (0.04% error)
+```
 
 #### Observations
    - the estimated number of paths calculated is rather close to the actual number using 5000 randomly generated valid paths (~1% error).
@@ -109,7 +121,7 @@ the exact number of $(7,3)$-paths considering the node set $(0, 1, 2, 3, 4, 5, 6
 
 
 ### <a name="c1"></a>Citation
-This code was used to resolve some of the problems addressed in the paper [(Pichat, 2015) A multipath approach to histology volume reconstruction](http://discovery.ucl.ac.uk/1468614/3/ISBI2015_tig.pdf). Please cite it if this happened to be useful to your work!
+This code was used to resolve some problems addressed in the paper [(Pichat, 2015) A multipath approach to histology volume reconstruction](http://discovery.ucl.ac.uk/1468614/3/ISBI2015_tig.pdf). Please cite it if this happened to be useful to your work!
 ```
 @inproceedings{pichat2015multi,
   title={A multi-path approach to histology volume reconstruction},
