@@ -1,48 +1,61 @@
 ## Computing $(s,t)$-paths of a graph
 
 
+<p align="center" >
+    <img src="figures/graph.png" width="350" >
+</p>
+
 ### Problem definition
-> we look for (all) the simple paths that connect vertices $s$ and $t$ (i.e., the $(s,t)$-paths) in an undirected graph, $G$.
+> we look for all the simple paths that connect vertices $s$ and $t$ (i.e., the $(s,t)$-paths) in an undirected graph, $G$.
 
 A solution to the problem translates into either:
 - listing those paths ([section 1](#h1)), in which case the count is a by-product
 - deriving a method that estimates the count without having to go through all the possible paths ([section 2](#h2))
 
-Note that the latter has little interest when one seeks the actual paths (but this is limited to rather small graphs)
+Note that the latter has little interest when one seeks the actual paths.
 
 ---
 
+### 0. Run
+
+you may simply run or look at the example script
+```python
+python src/example.py
+```
+
 ### <a name="h1">1.</a> Getting the list of $(s,t)$-paths
-1. Start with creating an adjacency matrix for either:
-   - a random graph
-   ```python
-   from utils import make_random_adjacency_matrix
-   
-   A, start, end = make_random_adjacency_matrix(12, density=0.7, return_st=True)
-   ```
-   - the graph used in the [paper](#c1)
-      - $\epsilon$ is a free parameter that controls the connectedness of the graph, i.e. the number of adjacent vertices to which one vertex is connected "above" and "below" (assuming the set of vertices is a sequence of increasing integers $[0,1,...,n]$, such that "above" and "below" refer to greater or smaller vertex values).
-      - In other words, $\epsilon$ refers to the maximum discrete distance between the current vertex and the "next, reachable" one. Note that the degrees of vertices at both ends must therefore be less than $\epsilon$.
-   ```python
-   from utils import make_special_adjacency_matrix
-   
-   n = 6  # total number of vertices
-   eps = 5  # number of jumps allowed
-   
-   A = make_special_adjacency_matrix(n, eps)
-   ```
-2. then get the list of paths (assuming vertices are represented by their indices), after picking:
-   - a `start` vertex, as an integer between 0 and the number of vertices -1
-   - an `end` vertex, as an integer between 0 and the number of vertices -1.
+1a. Start with creating a random adjacency matrix:
+```python
+from utils import make_random_adjacency_matrix
+
+n = 12  # number of vertices
+density = 0.7  # proportion of edges (higher means more edges)
+
+A, start_node, end_node = make_random_adjacency_matrix(n, density=density, return_st=True)
+```
+1b. Or start with the arbitrary adjacency matrix of the graph used in the [paper](#c1), where:
+    
+- $\epsilon$ is a free parameter that controls the connectedness of the graph, i.e. the number of adjacent vertices to which one vertex is connected "above" and "below" (assuming the nodes set is a sequence of increasing integers $[0,1,...,n]$, such that "above" and "below" refer to greater or smaller values).
+- In other words, $\epsilon$ refers to the maximum discrete distance between the current vertex and the "next, reachable" one. Note that the degrees of vertices at both ends must therefore be less than $\epsilon$.
+```python
+from utils import make_special_adjacency_matrix
+
+n = 6  # total number of vertices
+eps = 5  # number of jumps allowed
+
+A = make_special_adjacency_matrix(n, eps)
+```
+
+2. then get the list of paths:
 ```python
 from st_paths import PathsFinder
 
-paths = PathsFinder(A, start, end).get_paths()
+paths = PathsFinder(A, start_node, end_node).get_paths()
 ```
 
 #### Example
 
-Taking $n=6$ vertices, $\epsilon=2$, we get the following adjacency matrix, $A$:
+Taking $n=6$ vertices, $\epsilon=2$, we get the following "special" adjacency matrix, $A$:
 
 ```python
 [[0 1 1 0 0 0]
@@ -55,6 +68,8 @@ Taking $n=6$ vertices, $\epsilon=2$, we get the following adjacency matrix, $A$:
 the list of all the $(3,2)$-paths is $(3 \rightarrow 1 \rightarrow 0 \rightarrow 2), (3 \rightarrow 1 \rightarrow 2), (3 \rightarrow 2), (3 \rightarrow 4 \rightarrow 2), (3 \rightarrow 5 \rightarrow 4 \rightarrow 2)$. 
 > [!Note]
 > The case $\epsilon=1$ is trivial and only returns the path $(3 \rightarrow 2)$.
+
+
 
 #### Observations
 - on vertices
@@ -85,6 +100,7 @@ The problem of estimating the number of $(s,t)$-paths in random graphs is compli
 Algorithm 1 in [[1]](#r1) estimates that number, and can be accessed via:
 ```python
 import utils
+from st_paths import PathGenerator
 
 n = 12  # total number of vertices [0, 1, 2, ..., n-1]
 eps = 3  # max discrete distance allowed between a path vertex and its neighbour
@@ -111,7 +127,9 @@ Estimated 763.5292224000002 paths (0.062% error)
    - the distribution of generated paths lengths (see the histogram below, obtained for a different set of parameters) shows a clear bias toward shorter paths (as pointed out by the authors), since longer paths are more likely to reach "dead ends" along the way.
       - different valid $(s,t)$-paths may have the same length, which makes the histogram a bit tricky to interpret (as opposed to the direct path of length 2, here $(7,3)$, which is the only one of length 2).
 
-![histo_naive](figures/histo_naive2.png)
+<p align="center" >
+    <img src="figures/histo_naive2.png" width="500" >
+</p>
 
 ### References
 - <a name="r1">[1]</a> Roberts, B. and Kroese, D., 2007. Estimating the number of st paths in a graph. Journal of Graph Algorithms and Applications, 11(1), pp.195-214.

@@ -1,5 +1,4 @@
 import time
-import random
 import numpy as np
 from scipy import signal
 
@@ -19,7 +18,7 @@ def timeit(f):
 
 def vertex_degrees(n: int, eps: int):
     """
-    Returns the sequence of degrees of each vertex of our eps-connected n-vertex graph using convolution
+    Returns the sequence of degrees of each vertex of an eps-connected n-vertex graph using convolution
     """
     g = np.ones(n)
     el = np.hstack(([1] * eps, [0], [1] * eps))
@@ -68,78 +67,3 @@ def make_random_adjacency_matrix(s, density=0.5, return_st=True):
 
     else:
         return A.astype(int), None, None
-
-
-class PathGenerator:
-    def __init__(self, adjacency_matrix):
-        self.n = adjacency_matrix.shape[0]
-        self.adjacency = [[] for _ in range(self.n)]
-        for i in range(self.n):
-            self.adjacency[i] = np.where(adjacency_matrix[i] == 1)[0].tolist()
-
-    def make_path(self, start_node: int, end_node: int):
-
-        if start_node == end_node:
-            return [start_node], 1.0
-
-        visited = 0  # bitmask to track visited nodes
-        path = []
-        current_node = start_node
-        g = 1.0  # likelihood of the path being a valid path
-
-        while True:
-            path.append(current_node)
-            visited |= 1 << current_node
-
-            if current_node == end_node:
-                return path, g
-
-            neighbours = self.adjacency[current_node]
-            unvisited = []
-            for neighbour in neighbours:
-                if not (visited & (1 << neighbour)):
-                    unvisited.append(neighbour)
-
-            if not unvisited:
-                return None, 0.0  # dead-end
-
-            # randomly select next node
-            idx = random.randint(0, len(unvisited) - 1)
-            next_node = unvisited[idx]
-            g *= 1.0 / len(unvisited)
-            current_node = next_node
-
-    @timeit
-    def estimate_count_naive(self, start_node, end_node, n: int = 5000, n_bootstrap: int = 1000):
-        """Estimates count of valid s-t paths naively.
-
-        Args:
-            start_node (int) : Index of start vertex
-            end_node (int) : Index of end vertex
-            n (int) : Maximum number of paths to try and make in a single pass
-            n_bootstrap (int) : Number of times the procedure is repeated
-
-        Reference:
-        - Roberts, B. and Kroese, D., 2007. Estimating the number of st paths in a graph. Journal of Graph Algorithms and Applications, 11(1), pp.195-214.
-        """
-
-        x = 0
-
-        for _ in range(n_bootstrap):
-
-            _paths_list = []
-            _paths_lengths = []
-            _x = 0
-
-            for _ in range(n):
-
-                path, g = self.make_path(start_node, end_node)
-                if path:
-                    _paths_lengths.append(len(path))
-                    _x += 1 / g  # eq.(1)
-                    if path not in _paths_list:
-                        _paths_list.append(path)
-
-            x += _x / n
-
-        return x / n_bootstrap
